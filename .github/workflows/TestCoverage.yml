@@ -22,6 +22,15 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
+      # Git Secret을 이용한 application-aws.properties 생성
+      - name: Create spring properties
+        run: |
+          touch src/main/resources/application-aws.properties
+          echo "$AWS_PROPERTIES" > application-aws.properties.b64
+          base64 -d -i application-aws.properties.b64 > src/main/resources/application-aws.properties
+        env:
+          AWS_PROPERTIES: ${{ secrets.AWS_PROPERTIES }}
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
