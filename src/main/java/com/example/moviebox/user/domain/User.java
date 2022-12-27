@@ -1,6 +1,7 @@
 package com.example.moviebox.user.domain;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import javax.persistence.*;
 import lombok.*;
 
@@ -28,4 +29,22 @@ public class User {
 	private boolean emailAuthYn;
 	private String emailAuthKey;
 	private LocalDateTime emailAuthDate;
+
+	private LocalDateTime registrationDate;
+
+	public static User createAdminUser(String email, String encodingPassword) {
+		return User.builder()
+			.email(email)
+			.password(encodingPassword)
+			.role(Role.ADMIN)
+			.emailAuthYn(false)
+			.emailAuthKey(UUID.randomUUID().toString())
+			.registrationDate(LocalDateTime.now())
+			.build();
+	}
+
+	public void completeEmailAuthentication() {
+		emailAuthYn = true;
+		emailAuthDate = LocalDateTime.now();
+	}
 }
