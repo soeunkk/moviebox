@@ -21,6 +21,17 @@ public class AdminService {
 	private String serverDomain;
 
 	public long register(String email, String password) {
+		validateRegistration(email);
+
+		User user = User.createAdminUser(email, passwordEncoder.encode(password));
+		User savedUser = userRepository.save(user);
+
+		sendConfirmationEmail(savedUser);
+
+		return savedUser.getId();
+	}
+
+	private void validateRegistration(String email) {
 		if (!isValidEmailFormat(email)) {
 			throw BusinessException.EMAIL_FORMAT_INVALID;
 		}
@@ -29,13 +40,6 @@ public class AdminService {
 		if (userOpt.isPresent()) {
 			throw BusinessException.EMAIL_ALREADY_EXIST;
 		}
-
-		User user = User.createAdminUser(email, passwordEncoder.encode(password));
-		User savedUser = userRepository.save(user);
-
-		sendConfirmationEmail(savedUser);
-
-		return savedUser.getId();
 	}
 
 	private static boolean isValidEmailFormat(String email){
