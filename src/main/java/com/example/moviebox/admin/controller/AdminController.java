@@ -22,4 +22,9 @@ public class AdminController {
 		adminService.emailAuth(authKey);
 		return "인증이 완료되었습니다.";
 	}
+
+	@PostMapping("/login")
+	public String login(@RequestBody @Valid AdminRequest user) {
+		return adminService.login(user.getEmail(), user.getPassword());
+	}
 }

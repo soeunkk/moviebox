@@ -2,6 +2,7 @@ package com.example.moviebox.admin.service;
 
 import com.example.moviebox.component.MailUtil;
 import com.example.moviebox.exception.BusinessException;
+import com.example.moviebox.jwt.JwtProvider;
 import com.example.moviebox.user.domain.*;
 import java.util.Optional;
 import java.util.regex.*;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdminService {
 	private final PasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 	private final MailUtil mailUtil;
 	private final UserRepository userRepository;
 
@@ -68,5 +70,23 @@ public class AdminService {
 			.orElseThrow(() -> BusinessException.EMAIL_AUTH_KEY_INVALID);
 		user.completeEmailAuthentication();
 		userRepository.save(user);
+	}
+
+	public String login(String email, String password) {
+		User user = userRepository.findByEmail(email)
+			.orElseThrow(() -> BusinessException.USER_NOT_FOUND_BY_EMAIL);
+		validateLogin(user, password);
+
+		return jwtProvider.createToken(user.getEmail(), user.getRole());
+	}
+
+	private void validateLogin(User user, String password) {
+		if (!user.isEmailAuthYn()) {
+			throw BusinessException.EMAIL_NOT_VERIFIED_YET;
+		}
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw BusinessException.USER_NOT_FOUND_BY_PASSWORD;
+		}
 	}
 }
