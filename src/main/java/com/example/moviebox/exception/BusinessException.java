@@ -19,6 +19,11 @@ public class BusinessException extends RuntimeException {
 		this.errorCode = errorCode;
 	}
 
+	@Override
+	public synchronized Throwable fillInStackTrace() {
+		return this;
+	}
+
 	public HttpStatus getHttpStatus() {
 		return errorCode.getHttpStatus();
 	}
