@@ -67,7 +67,7 @@ public class AdminService {
 		String email = user.getEmail();
 		String subject = "Moviebox 인증 메일";
 		String text = "<p>Moviebox 관리자 가입을 축하드립니다.</p><p>이메일 인증을 원한다면 아래 버튼을 클릭해 주세요.</p>"
-			+ "<div><a href='" + serverDomain + "/api/email-auth?id=" + user.getEmailAuthKey() + "'>인증</a></div>";
+			+ "<div><a href='" + serverDomain + "/api/email-auth?key=" + user.getEmailAuthKey() + "'>인증</a></div>";
 		mailUtil.sendMail(email, subject, text);
 	}
 
@@ -115,7 +115,7 @@ public class AdminService {
 		Authentication authentication = jwtProvider.getAuthentication(request.getAccessToken());
 
 		String refreshToken = redisService.getTokenValues(Long.parseLong(authentication.getName()));
-		if (!refreshToken.equals(request.getRefreshToken())) {
+		if (refreshToken == null || !refreshToken.equals(request.getRefreshToken())) {
 			throw BusinessException.EXPIRED_REFRESH_TOKEN;
 		}
 

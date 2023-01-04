@@ -102,6 +102,17 @@ class AdminServiceTest {
 	}
 
 	@Test
+	public void testEmailAuthByWrongKey() {
+		given(userRepository.findByEmailAuthKey(anyString()))
+			.willReturn(Optional.empty());
+
+		BusinessException exception = assertThrows(BusinessException.class,
+			() -> adminService.emailAuth("auth-key"));
+
+		assertEquals(exception, BusinessException.EMAIL_AUTH_KEY_INVALID);
+	}
+
+	@Test
 	public void testLogin() {
 		given(userRepository.findByEmail(anyString()))
 			.willReturn(Optional.of(User.builder()
@@ -257,7 +268,7 @@ class AdminServiceTest {
 		given(jwtProvider.getAuthentication(anyString()))
 			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
 		given(redisService.getTokenValues(anyLong()))
-			.willReturn("변경해야 함");	// TODO: 이거 주면 안됨
+			.willReturn(null);
 
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> adminService.reissue(new TokenDto.Request("access-token", "refresh-token")));

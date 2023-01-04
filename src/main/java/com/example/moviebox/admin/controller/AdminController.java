@@ -19,7 +19,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/email-auth")
-	public String emailAuth(@RequestParam(name="id") String authKey) {
+	public String emailAuth(@RequestParam(name="key") String authKey) {
 		adminService.emailAuth(authKey);
 		return "인증이 완료되었습니다.";
 	}
