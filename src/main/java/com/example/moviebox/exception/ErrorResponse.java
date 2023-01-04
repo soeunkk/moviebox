@@ -3,7 +3,6 @@ package com.example.moviebox.exception;
 import lombok.*;
 
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ErrorResponse {
@@ -13,6 +12,7 @@ public class ErrorResponse {
 	private String detail;
 	private String instance;
 
+	@Builder
 	public ErrorResponse(ErrorCode errorCode, String errorMessage, String errorOccurrencePath) {
 		type = errorCode.getErrorType();
 		title = errorCode.getDescription();
