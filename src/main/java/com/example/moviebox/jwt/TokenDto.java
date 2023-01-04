@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 public class TokenDto {
 	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Request {
 		@NotEmpty(message = "accessToken을 입력해주세요.")
 		private String accessToken;
