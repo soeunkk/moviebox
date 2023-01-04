@@ -1,4 +1,4 @@
-package com.example.moviebox.redis;
+package com.example.moviebox.common.redis;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

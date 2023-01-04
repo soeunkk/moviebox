@@ -2,6 +2,7 @@ package com.example.moviebox.admin.controller;
 
 import com.example.moviebox.admin.dto.AdminRequest;
 import com.example.moviebox.admin.service.AdminService;
+import com.example.moviebox.jwt.TokenDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,12 @@ public class AdminController {
 	}
 
 	@PostMapping("/login")
-	public String login(@RequestBody @Valid AdminRequest user) {
-		return adminService.login(user.getEmail(), user.getPassword());
+	public TokenDto.Response login(@RequestBody @Valid AdminRequest adminLoginRequest) {
+		return adminService.login(adminLoginRequest.getEmail(), adminLoginRequest.getPassword());
+	}
+
+	@PostMapping("/reissue")
+	public TokenDto.Response reissue(@RequestBody @Valid TokenDto.Request tokenRequest) {	// TODO: admin에 있어도 되는가?
+		return adminService.reissue(tokenRequest);
 	}
 }

@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
-	private final JwtProvider jwtProvider;
+	private final JwtTokenProvider jwtProvider;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {

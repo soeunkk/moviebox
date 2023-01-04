@@ -2,26 +2,32 @@ package com.example.moviebox.admin.service;
 
 import com.example.moviebox.component.MailUtil;
 import com.example.moviebox.exception.BusinessException;
-import com.example.moviebox.jwt.JwtProvider;
+import com.example.moviebox.jwt.*;
+import com.example.moviebox.jwt.TokenDto.Request;
+import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.user.domain.*;
 import java.util.Optional;
 import java.util.regex.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class AdminService {
 	private final PasswordEncoder passwordEncoder;
-	private final JwtProvider jwtProvider;
+	private final JwtTokenProvider jwtProvider;
 	private final MailUtil mailUtil;
 	private final UserRepository userRepository;
+	private final RedisService redisService;
 
 	@Value("${server.domain}")
 	private String serverDomain;
 
+	@Transactional
 	public long register(String email, String password) {
 		validateRegistration(email);
 
@@ -65,6 +71,7 @@ public class AdminService {
 		mailUtil.sendMail(email, subject, text);
 	}
 
+	@Transactional
 	public void emailAuth(String authKey) {
 		User user = userRepository.findByEmailAuthKey(authKey)
 			.orElseThrow(() -> BusinessException.EMAIL_AUTH_KEY_INVALID);
@@ -72,12 +79,13 @@ public class AdminService {
 		userRepository.save(user);
 	}
 
-	public String login(String email, String password) {
+	@Transactional
+	public TokenDto.Response login(String email, String password) {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> BusinessException.USER_NOT_FOUND_BY_EMAIL);
 		validateLogin(user, password);
 
-		return jwtProvider.createToken(user.getEmail(), user.getRole());
+		return jwtProvider.generateAccessTokenAndRefreshToken(user.getId());
 	}
 
 	private void validateLogin(User user, String password) {
@@ -88,5 +96,29 @@ public class AdminService {
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw BusinessException.USER_NOT_FOUND_BY_PASSWORD;
 		}
+	}
+
+	@Transactional
+	public TokenDto.Response reissue(TokenDto.Request request) {
+		Long userId = validateRefreshTokenAndGetUserId(request);
+		return jwtProvider.generateAccessTokenAndRefreshToken(userId);
+	}
+
+	private Long validateRefreshTokenAndGetUserId(Request request) {
+		if (!jwtProvider.validateToken(request.getRefreshToken())) {
+			throw BusinessException.INVALID_REFRESH_TOKEN;
+		}
+		if (!jwtProvider.validateToken(request.getAccessToken())) {
+			throw BusinessException.INVALID_ACCESS_TOKEN;
+		}
+
+		Authentication authentication = jwtProvider.getAuthentication(request.getAccessToken());
+
+		String refreshToken = redisService.getTokenValues(Long.parseLong(authentication.getName()));
+		if (!refreshToken.equals(request.getRefreshToken())) {
+			throw BusinessException.EXPIRED_REFRESH_TOKEN;
+		}
+
+		return Long.parseLong(authentication.getName());
 	}
 }

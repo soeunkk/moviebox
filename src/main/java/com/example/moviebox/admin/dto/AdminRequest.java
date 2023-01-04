@@ -1,15 +1,15 @@
 package com.example.moviebox.admin.dto;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminRequest {
-	@NotNull
+	@NotEmpty
 	private String email;
 
-	@NotNull
+	@NotEmpty
 	private String password;
 }

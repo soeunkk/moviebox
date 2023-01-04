@@ -13,10 +13,9 @@ public class SecurityUserDetailService implements UserDetailsService {
 	private final UserRepository userRepository;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// TODO: 소셜로그인도 허용하려면 추후 이 부분 바꿔야 함
-		User user = userRepository.findByEmail(username)
-			.orElseThrow(() -> BusinessException.USER_NOT_FOUND_BY_EMAIL);
+	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+		User user = userRepository.findById(Long.parseLong(userId))
+			.orElseThrow(() -> BusinessException.USER_NOT_FOUND_BY_USERID);
 
 		return new SecurityUser(user);
 	}
