@@ -1,41 +1,44 @@
 package com.example.moviebox.exception.rest;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.snippet.Attributes.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.snippet.Attributes.attributes;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.moviebox.BaseControllerTest;
 import com.example.moviebox.admin.service.AdminService;
 import com.example.moviebox.exception.ErrorCode;
-import com.example.moviebox.exception.rest.CodeResponseFieldsSnippet;
-import java.util.*;
-import org.junit.jupiter.api.*;
+import java.util.Arrays;
+import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.*;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.PayloadSubsectionExtractor;
 import org.springframework.test.web.servlet.ResultActions;
-
 public class ErrorCodeDocumentationTest extends BaseControllerTest {
 	@MockBean
 	private AdminService adminService;
 
-	@DisplayName("ErrorCode 문서화")
 	@Test
+	@DisplayName("ErrorCode 문서화")
 	public void errorCodeDocumentation() throws Exception {
 		// given + when
-		ResultActions result = mockMvc.perform(get("/errors")
+		ResultActions result = this.mockMvc.perform(get("/errors")
 			.accept(MediaType.APPLICATION_JSON));
 
 		// then
 		result.andExpect(status().isOk());
 
 		// docs
-		result.andDo(document("에러 코드",
+		result.andDo(document("error-code",
 			codeResponseFields("code-response", beneathPath("errorCode"),
-				attributes(key("title").value("에러 코드")),
+				attributes(key("title").value("error-code")),
 				enumConvertFieldDescriptor(ErrorCode.values())
 			)
 		));
@@ -53,4 +56,5 @@ public class ErrorCodeDocumentationTest extends BaseControllerTest {
 		return new CodeResponseFieldsSnippet(type, subsectionExtractor, Arrays.asList(descriptors), attributes
 			, true);
 	}
+
 }

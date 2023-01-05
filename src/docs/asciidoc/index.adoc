@@ -1,0 +1,6 @@
+= Moviebox Error Code 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+
+include::{snippets}/error-code/code-response-fields-beneath-errorCode.adoc[]
