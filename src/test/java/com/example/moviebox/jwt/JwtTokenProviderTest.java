@@ -1,8 +1,12 @@
 package com.example.moviebox.jwt;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-import com.example.moviebox.user.domain.Role;
+import com.example.moviebox.common.redis.RedisService;
+import com.example.moviebox.configuration.security.SecurityUser;
+import com.example.moviebox.user.domain.*;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.*;
@@ -10,21 +14,30 @@ import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Date;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 class JwtTokenProviderTest {
-	@Autowired
-	private JwtTokenProvider jwtProvider;
-
+	@Mock
+	private UserDetailsService userDetailsService;
+	@Mock
+	private RedisService redisService;	// redis는 Git Action에서 사용할 수 없으므로 Mock
 	@Value("${jwt.secret}")
 	private String secretKeyString;
+	private JwtTokenProvider jwtProvider;
 	private Key secretKey;
 
 	@BeforeEach
-	private void init() {
+	private void initEach() {
+		jwtProvider = new JwtTokenProvider(userDetailsService, redisService, secretKeyString);
+
 		byte[] keyBytes = Decoders.BASE64.decode(secretKeyString);
 		this.secretKey = Keys.hmacShaKeyFor(keyBytes);
 	}
@@ -42,7 +55,14 @@ class JwtTokenProviderTest {
 	@DisplayName("토큰에서 올바른 인증 정보를 조회한다.")
 	@Test
 	public void testGetAuthentication() {
-		TokenDto.Response response = jwtProvider.generateAccessTokenAndRefreshToken(1L);	// TODO: admin 권한 있는 걸로 사람 만들던지 해야 ㅎ됨
+		given(userDetailsService.loadUserByUsername(anyString()))
+			.willReturn(new SecurityUser(User.builder()
+				.id(1L)
+				.password("pw")
+				.role(Role.ADMIN)
+				.build()));
+
+		TokenDto.Response response = jwtProvider.generateAccessTokenAndRefreshToken(1L);
 		String accessToken = response.getAccessToken();
 
 		Authentication authentication = jwtProvider.getAuthentication(accessToken);
