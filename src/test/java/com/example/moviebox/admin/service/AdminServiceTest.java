@@ -56,7 +56,6 @@ class AdminServiceTest {
 		assertEquals("encoded-password", captor.getValue().getPassword());
 		assertFalse(captor.getValue().isEmailAuth());
 		assertNotNull(captor.getValue().getEmailAuthKey());
-		assertNotNull(captor.getValue().getRegistrationDate());
 	}
 
 	@Test

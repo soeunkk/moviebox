@@ -1,5 +1,6 @@
 package com.example.moviebox.user.domain;
 
+import com.example.moviebox.common.entity.BaseTimeEntity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class User {
+public class User extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -30,8 +31,6 @@ public class User {
 	private String emailAuthKey;
 	private LocalDateTime emailAuthDate;
 
-	private LocalDateTime registrationDate;
-
 	public static User createAdminUser(String email, String encodingPassword) {
 		return User.builder()
 			.email(email)
@@ -39,7 +38,6 @@ public class User {
 			.role(Role.ADMIN)
 			.isEmailAuth(false)
 			.emailAuthKey(UUID.randomUUID().toString())
-			.registrationDate(LocalDateTime.now())
 			.build();
 	}
 
