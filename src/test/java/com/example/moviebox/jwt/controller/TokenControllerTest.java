@@ -43,9 +43,10 @@ class TokenControllerTest extends BaseControllerTest {
 					new Request("access-token1", "refresh-token1")
 				)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.grantType").value("Bearer"))
-			.andExpect(jsonPath("$.accessToken").value("access-token2"))
-			.andExpect(jsonPath("$.refreshToken").value("refresh-token2"));
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$..grantType").value("Bearer"))
+			.andExpect(jsonPath("$..accessToken").value("access-token2"))
+			.andExpect(jsonPath("$..refreshToken").value("refresh-token2"));
 
 		// docs
 		result.andDo(document("[success] reissue",
@@ -59,9 +60,12 @@ class TokenControllerTest extends BaseControllerTest {
 					fieldWithPath("refreshToken").description("현재 Refresh 토큰")
 				)
 				.responseFields(
-					fieldWithPath("grantType").description("인증 타입"),
-					fieldWithPath("accessToken").description("새로 발급된 Access 토큰"),
-					fieldWithPath("refreshToken").description("새로 발급된 Refresh 토큰")
+					fieldWithPath("success").description("요청 성공 여부"),
+					fieldWithPath("data").description("결과 데이터"),
+					fieldWithPath("data.grantType").description("인증 타입"),
+					fieldWithPath("data.accessToken").description("새로 발급된 Access 토큰"),
+					fieldWithPath("data.refreshToken").description("새로 발급된 Refresh 토큰"),
+					fieldWithPath("error").description("에러 내용")
 				)
 				.build())
 		));

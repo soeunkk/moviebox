@@ -1,6 +1,6 @@
 package com.example.moviebox.admin.service;
 
-import com.example.moviebox.component.MailUtil;
+import com.example.moviebox.utils.MailUtils;
 import com.example.moviebox.exception.BusinessException;
 import com.example.moviebox.jwt.*;
 import com.example.moviebox.jwt.dto.TokenDto;
@@ -20,22 +20,20 @@ public class AdminService {
 
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtProvider;
-	private final MailUtil mailUtil;
+	private final MailUtils mailUtil;
 	private final UserRepository userRepository;
 
 	@Value("${server.domain}")
 	private String serverDomain;
 
 	@Transactional
-	public long register(String email, String password) {
+	public void register(String email, String password) {
 		validateRegistration(email);
 
 		User user = User.createAdminUser(email, passwordEncoder.encode(password));
 		User savedUser = userRepository.save(user);
 
 		sendConfirmationEmail(savedUser);
-
-		return savedUser.getId();
 	}
 
 	private void validateRegistration(String email) {

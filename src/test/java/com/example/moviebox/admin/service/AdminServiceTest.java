@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
-import com.example.moviebox.component.MailUtil;
+import com.example.moviebox.utils.MailUtils;
 import com.example.moviebox.exception.*;
 import com.example.moviebox.jwt.*;
 import com.example.moviebox.jwt.dto.TokenDto;
@@ -23,7 +23,7 @@ class AdminServiceTest {
 	@Mock
 	private JwtTokenProvider jwtProvider;
 	@Mock
-	private MailUtil mailUtil;
+	private MailUtils mailUtil;
 	@Mock
 	private UserRepository userRepository;
 

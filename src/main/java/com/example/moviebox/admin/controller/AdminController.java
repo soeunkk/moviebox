@@ -2,9 +2,11 @@ package com.example.moviebox.admin.controller;
 
 import com.example.moviebox.admin.dto.AdminRequest;
 import com.example.moviebox.admin.service.AdminService;
+import com.example.moviebox.common.dto.ApiResponse;
 import com.example.moviebox.jwt.dto.TokenDto;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -13,19 +15,22 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 	private final AdminService adminService;
 
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/register")
-	public long register(@RequestBody @Valid AdminRequest user) {
-		return adminService.register(user.getEmail(), user.getPassword());
+	public ApiResponse<?> register(@RequestBody @Valid AdminRequest user) {
+		adminService.register(user.getEmail(), user.getPassword());
+		return ApiResponse.success();
 	}
 
 	@GetMapping("/email-auth")
-	public String emailAuth(@RequestParam(name="key") String authKey) {
+	public String emailAuth(@RequestParam(name="key") String authKey) {	// 사용자에게 보여줄 것이므로 ApiResponse에 담지 않음
 		adminService.emailAuth(authKey);
 		return "인증이 완료되었습니다.";
 	}
 
 	@PostMapping("/login")
-	public TokenDto.Response login(@RequestBody @Valid AdminRequest adminLoginRequest) {
-		return adminService.login(adminLoginRequest.getEmail(), adminLoginRequest.getPassword());
+	public ApiResponse<TokenDto.Response> login(@RequestBody @Valid AdminRequest adminLoginRequest) {
+		TokenDto.Response tokenResponse = adminService.login(adminLoginRequest.getEmail(), adminLoginRequest.getPassword());
+		return ApiResponse.success(tokenResponse);
 	}
 }

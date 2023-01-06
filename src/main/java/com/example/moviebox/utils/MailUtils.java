@@ -1,4 +1,4 @@
-package com.example.moviebox.component;
+package com.example.moviebox.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.*;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class MailUtil {
+public class MailUtils {
 	private final JavaMailSender javaMailSender;
 
 	public boolean sendMail(String mail, String subject, String text) {

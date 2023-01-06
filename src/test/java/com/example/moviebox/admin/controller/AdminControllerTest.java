@@ -31,16 +31,16 @@ class AdminControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testRegister() throws Exception {
-		given(adminService.register(anyString(), anyString()))
-			.willReturn(1L);
+		willDoNothing()
+			.given(adminService).register(anyString(), anyString());
 
 		ResultActions result = mockMvc.perform(post("/api/admin/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(
 					objectMapper.writeValueAsString(new AdminRequest("example@email.com", "password"))
 				))
-			.andExpect(status().isOk())
-			.andExpect(content().string("1"));
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.success").value(true));
 
 		// docs
 		result.andDo(document("[success] register",
@@ -59,8 +59,8 @@ class AdminControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testRegisterByWrongFormatEmail() throws Exception {
-		given(adminService.register(anyString(), anyString()))
-			.willThrow(BusinessException.EMAIL_FORMAT_INVALID);
+		willThrow(BusinessException.EMAIL_FORMAT_INVALID)
+			.given(adminService).register(anyString(), anyString());
 
 		ResultActions result = mockMvc.perform(post("/api/admin/register")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -78,8 +78,8 @@ class AdminControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testRegisterByExistEmail() throws Exception {
-		given(adminService.register(anyString(), anyString()))
-			.willThrow(BusinessException.EMAIL_ALREADY_EXIST);
+		willThrow(BusinessException.EMAIL_ALREADY_EXIST)
+			.given(adminService).register(anyString(), anyString());
 
 		ResultActions result = mockMvc.perform(post("/api/admin/register")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -147,9 +147,10 @@ class AdminControllerTest extends BaseControllerTest {
 				.content(
 					objectMapper.writeValueAsString(new AdminRequest("example@email.com", "password"))))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.grantType").value("Bearer"))
-			.andExpect(jsonPath("$.accessToken").value("access-token"))
-			.andExpect(jsonPath("$.refreshToken").value("refresh-token"));
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$..grantType").value("Bearer"))
+			.andExpect(jsonPath("$..accessToken").value("access-token"))
+			.andExpect(jsonPath("$..refreshToken").value("refresh-token"));
 
 		// docs
 		result.andDo(document("[success] login",
@@ -162,9 +163,12 @@ class AdminControllerTest extends BaseControllerTest {
 						fieldWithPath("password").description("비밀번호")
 					)
 					.responseFields(
-						fieldWithPath("grantType").description("인증 타입"),
-						fieldWithPath("accessToken").description("새로 발급된 Access 토큰"),
-						fieldWithPath("refreshToken").description("새로 발급된 Refresh 토큰")
+						fieldWithPath("success").description("요청 성공 여부"),
+						fieldWithPath("data").description("결과 데이터"),
+						fieldWithPath("data.grantType").description("인증 타입"),
+						fieldWithPath("data.accessToken").description("새로 발급된 Access 토큰"),
+						fieldWithPath("data.refreshToken").description("새로 발급된 Refresh 토큰"),
+						fieldWithPath("error").description("에러 내용")
 					)
 					.build())
 			));

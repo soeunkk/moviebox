@@ -27,9 +27,10 @@ class ErrorControllerTest extends BaseControllerTest {
 
 		mockMvc.perform(get("/api/admin/email-auth?id=kkk"))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.type").value("COMMON-001"))
-			.andExpect(jsonPath("$.status").value(400))
-			.andExpect(jsonPath("$.instance").value("/api/admin/email-auth"));
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$..type").value("COMMON-001"))
+			.andExpect(jsonPath("$..status").value(400))
+			.andExpect(jsonPath("$..instance").value("/api/admin/email-auth"));
 	}
 
 	@DisplayName("잘못된 HTTP 메소드로 요청한 경우를 에러 핸들링한다.")
@@ -44,9 +45,10 @@ class ErrorControllerTest extends BaseControllerTest {
 	public void handleMissingServletRequestParameterException() throws Exception {
 		mockMvc.perform(get("/api/admin/email-auth"))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.type").value("COMMON-001"))
-			.andExpect(jsonPath("$.status").value(400))
-			.andExpect(jsonPath("$.instance").value("/api/admin/email-auth"));
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$..type").value("COMMON-001"))
+			.andExpect(jsonPath("$..status").value(400))
+			.andExpect(jsonPath("$..instance").value("/api/admin/email-auth"));
 	}
 
 	@DisplayName("Content Type이 잘못 되었을 경우를 에러 핸들링한다.")
@@ -58,9 +60,10 @@ class ErrorControllerTest extends BaseControllerTest {
 					new AdminRequest("abc123@gmail.com", "123123")
 				)))
 			.andExpect(status().isUnsupportedMediaType())
-			.andExpect(jsonPath("$.type").value("COMMON-003"))
-			.andExpect(jsonPath("$.status").value(415))
-			.andExpect(jsonPath("$.instance").value("/api/admin/login"));
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$..type").value("COMMON-003"))
+			.andExpect(jsonPath("$..status").value(415))
+			.andExpect(jsonPath("$..instance").value("/api/admin/login"));
 	}
 
 	@DisplayName("Request Body 중 일부가 누락 되었을 경우를 에러 핸들링한다.")
@@ -72,9 +75,10 @@ class ErrorControllerTest extends BaseControllerTest {
 					new AdminRequest("abc123@gmail.com", null)
 				)))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.type").value("COMMON-001"))
-			.andExpect(jsonPath("$.status").value(400))
-			.andExpect(jsonPath("$.instance").value("/api/admin/login"));
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$..type").value("COMMON-001"))
+			.andExpect(jsonPath("$..status").value(400))
+			.andExpect(jsonPath("$..instance").value("/api/admin/login"));
 	}
 
 	@DisplayName("Request Body가 전체 누락 되었을 경우를 에러 핸들링한다.")
@@ -83,8 +87,9 @@ class ErrorControllerTest extends BaseControllerTest {
 		mockMvc.perform(post("/api/admin/login")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.type").value("COMMON-001"))
-			.andExpect(jsonPath("$.status").value(400))
-			.andExpect(jsonPath("$.instance").value("/api/admin/login"));
+			.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$..type").value("COMMON-001"))
+			.andExpect(jsonPath("$..status").value(400))
+			.andExpect(jsonPath("$..instance").value("/api/admin/login"));
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.*;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,11 +30,14 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @ContextConfiguration(classes = {MovieBoxApplication.class, SecurityException.class, RedisConfiguration.class})
 public abstract class BaseControllerTest {
 	protected static final List<FieldDescriptor> ERROR_RESPONSE_FIELDS = Arrays.asList(	// for rest docs
-		fieldWithPath("type").description("에러 코드"),
-		fieldWithPath("title").description("간략한 설명"),
-		fieldWithPath("status").description("HTTP 응답 코드"),
-		fieldWithPath("detail").description("자세한 설명"),
-		fieldWithPath("instance").description("에러 발생 근원지")
+		fieldWithPath("success").description("요청 성공 여부"),
+		fieldWithPath("data").description("결과 데이터"),
+		fieldWithPath("error").description("에러 내용"),
+		fieldWithPath("error.type").description("에러 코드"),
+		fieldWithPath("error.title").description("간략한 설명"),
+		fieldWithPath("error.status").description("HTTP 응답 코드"),
+		fieldWithPath("error.detail").description("자세한 설명"),
+		fieldWithPath("error.instance").description("에러 발생 근원지")
 	);
 
 	@Autowired
@@ -53,9 +57,10 @@ public abstract class BaseControllerTest {
 	}
 
 	protected void checkErrorResponse(ResultActions result, BusinessException ex) throws Exception {
-		result.andExpect(jsonPath("$.type").value(ex.getErrorCode().getErrorType()))
-			.andExpect(jsonPath("$.title").value(ex.getErrorCode().getDescription()))
-			.andExpect(jsonPath("$.status").value(ex.getHttpStatus().value()))
-			.andExpect(jsonPath("$.detail").value(ex.getMessage()));
+		result.andExpect(jsonPath("$.success").value(false))
+			.andExpect(jsonPath("$..type").value(ex.getErrorCode().getErrorType()))
+			.andExpect(jsonPath("$..title").value(ex.getErrorCode().getDescription()))
+			.andExpect(jsonPath("$..status").value(ex.getHttpStatus().value()))
+			.andExpect(jsonPath("$..detail").value(ex.getMessage()));
 	}
 }
