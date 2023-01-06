@@ -3,7 +3,8 @@ plugins {
     id 'jacoco'
     id 'org.springframework.boot' version '2.7.7'
     id 'io.spring.dependency-management' version '1.1.0'
-    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'org.asciidoctor.jvm.convert' version "3.3.2"
+    id 'com.epages.restdocs-api-spec' version "0.16.2"
 }
 
 jacoco {
@@ -11,13 +12,14 @@ jacoco {
 }
 
 group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '11'
 
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExtensions
 }
 
 repositories {
@@ -25,20 +27,35 @@ repositories {
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+    set("snippetsDir", file("build/generated-snippets"))
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.16.2'
+
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
@@ -46,9 +63,55 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.register("restDocsTest", Test) {
+    outputs.dir snippetsDir
+    useJUnitPlatform {
+        includeTags("restDocs")
+    }
+
+    finalizedBy "asciidoctor"
+    finalizedBy "openapi3"
+}
+
 tasks.named('asciidoctor') {
+    dependsOn restDocsTest
+
+    configurations "asciidoctorExtensions"
     inputs.dir snippetsDir
-    dependsOn test
+    baseDirFollowsSourceDir()
+}
+
+openapi3 {
+    servers = [
+            { url = "http://54.180.139.126"},
+            { url = "http://localhost:8080"},
+    ]
+    title = "Moviebox API"
+    description = "Spring REST Docs 생성시 추가 생성되는 OpenAPI 문서를 이용한 Moviebox API 문서입니다."
+    version = "0.0.1"
+    format = "yaml"
+}
+
+tasks.register("apiBuild", GradleBuild) {
+    tasks = ["restDocsTest", "build"]
+}
+
+// jar 파일 만들 때 포함되도록 복사
+bootJar {
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    from("swagger-ui") {
+        into "BOOT-INF/classes/static/swagger"
+    }
+    from("${asciidoctor.outputDir}") {
+        into "BOOT-INF/classes/static/docs"
+    }
+    from("build/api-spec") {
+        into "BOOT-INF/classes/static/swagger"
+    }
+
+    archiveFileName.set "moviebox.jar"
 }
 
 test {

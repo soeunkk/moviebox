@@ -37,3 +37,4 @@ out/
 .vscode/
 
 application-aws.properties
+application-security.properties
