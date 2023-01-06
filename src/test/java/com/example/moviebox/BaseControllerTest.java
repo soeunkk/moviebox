@@ -7,13 +7,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.moviebox.configuration.RedisConfiguration;
 import com.example.moviebox.exception.BusinessException;
+import com.example.moviebox.jwt.JwtAuthenticationFilter;
+import com.example.moviebox.jwt.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.restdocs.*;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -46,12 +51,15 @@ public abstract class BaseControllerTest {
 	protected ObjectMapper objectMapper;
 	@Autowired
 	protected WebApplicationContext webApplicationContext;
+	@Mock
+	private JwtTokenProvider jwtProvider;
 
 	@BeforeEach
 	public void init(WebApplicationContext ctx, RestDocumentationContextProvider restDocumentationContextProvider) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
 			.apply(documentationConfiguration(restDocumentationContextProvider))
 			.addFilters(new CharacterEncodingFilter("UTF-8", true))
+			.addFilters(new JwtAuthenticationFilter(jwtProvider))
 			.alwaysDo(print())
 			.build();
 	}

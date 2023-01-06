@@ -98,6 +98,13 @@ class JwtTokenProviderTest {
 			() -> jwtProvider.getAuthentication(invalidSecretToken));
 	}
 
+	@DisplayName("토큰 값이 빈 상태로 인증 정보를 조회할 경우 예외를 발생시킨다.")
+	@Test
+	public void testGetAuthenticationByEmptyToken() {
+		assertThrows(IllegalArgumentException .class,
+			() -> jwtProvider.getAuthentication(""));
+	}
+
 	@DisplayName("토큰이 올바르면 true를 반환한다.")
 	@Test
 	public void testValidateToken() {
@@ -131,6 +138,12 @@ class JwtTokenProviderTest {
 		final String invalidSecretToken = createAdminToken(expirationDate, createInvalidSecretKey());
 
 		assertFalse(jwtProvider.validateToken(invalidSecretToken));
+	}
+
+	@DisplayName("토큰 값이 없으면 false를 반환한다.")
+	@Test
+	public void testValidateTokenByEmptyToken() {
+		assertFalse(jwtProvider.validateToken(""));
 	}
 
 	private static String createAdminToken(Date expirationDate, Key secretKey) {

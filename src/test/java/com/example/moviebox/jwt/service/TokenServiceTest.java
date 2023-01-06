@@ -62,7 +62,7 @@ class TokenServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> tokenService.reissue(new TokenDto.Request("access-token", "refresh-token")));
 
-		assertEquals(exception, BusinessException.INVALID_REFRESH_TOKEN);
+		assertEquals(BusinessException.INVALID_REFRESH_TOKEN, exception);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class TokenServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> tokenService.reissue(new TokenDto.Request("access-token", "refresh-token")));
 
-		assertEquals(exception, BusinessException.INVALID_ACCESS_TOKEN);
+		assertEquals(BusinessException.INVALID_ACCESS_TOKEN, exception);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class TokenServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> tokenService.reissue(new TokenDto.Request("access-token", "previous-refresh-token")));
 
-		assertEquals(exception, BusinessException.EXPIRED_REFRESH_TOKEN);
+		assertEquals(BusinessException.EXPIRED_REFRESH_TOKEN, exception);
 	}
 
 	@Test
@@ -115,6 +115,6 @@ class TokenServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> tokenService.reissue(new TokenDto.Request("access-token", "refresh-token")));
 
-		assertEquals(exception, BusinessException.EXPIRED_REFRESH_TOKEN);
+		assertEquals(BusinessException.EXPIRED_REFRESH_TOKEN, exception);
 	}
 }

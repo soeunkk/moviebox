@@ -104,7 +104,7 @@ class AdminServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> adminService.emailAuth("auth-key"));
 
-		assertEquals(exception, BusinessException.EMAIL_AUTH_KEY_INVALID);
+		assertEquals(BusinessException.EMAIL_AUTH_KEY_INVALID, exception);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ class AdminServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> adminService.login("email", "pw"));
 
-		assertEquals(exception, BusinessException.USER_NOT_FOUND_BY_EMAIL);
+		assertEquals(BusinessException.USER_NOT_FOUND_BY_EMAIL, exception);
 	}
 
 	@Test
@@ -158,7 +158,7 @@ class AdminServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> adminService.login("email", "pw"));
 
-		assertEquals(exception, BusinessException.EMAIL_NOT_VERIFIED_YET);
+		assertEquals(BusinessException.EMAIL_NOT_VERIFIED_YET, exception);
 	}
 
 	@Test
@@ -177,6 +177,6 @@ class AdminServiceTest {
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> adminService.login("email", "pw"));
 
-		assertEquals(exception, BusinessException.USER_NOT_FOUND_BY_PASSWORD);
+		assertEquals(BusinessException.USER_NOT_FOUND_BY_PASSWORD, exception);
 	}
 }
