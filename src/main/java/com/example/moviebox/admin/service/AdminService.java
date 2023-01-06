@@ -6,7 +6,6 @@ import com.example.moviebox.jwt.*;
 import com.example.moviebox.jwt.TokenDto.Request;
 import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.user.domain.*;
-import java.util.Optional;
 import java.util.regex.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,7 +80,7 @@ public class AdminService {
 	}
 
 	private void validateLogin(User user, String password) {
-		if (!user.isEmailAuthYn()) {
+		if (!user.isEmailAuth()) {
 			throw BusinessException.EMAIL_NOT_VERIFIED_YET;
 		}
 

@@ -26,7 +26,7 @@ public class User {
 	private SocialType socialType;
 	private String accessToken;
 
-	private boolean emailAuthYn;
+	private boolean isEmailAuth;
 	private String emailAuthKey;
 	private LocalDateTime emailAuthDate;
 
@@ -37,14 +37,14 @@ public class User {
 			.email(email)
 			.password(encodingPassword)
 			.role(Role.ADMIN)
-			.emailAuthYn(false)
+			.isEmailAuth(false)
 			.emailAuthKey(UUID.randomUUID().toString())
 			.registrationDate(LocalDateTime.now())
 			.build();
 	}
 
 	public void completeEmailAuthentication() {
-		emailAuthYn = true;
+		isEmailAuth = true;
 		emailAuthDate = LocalDateTime.now();
 	}
 }

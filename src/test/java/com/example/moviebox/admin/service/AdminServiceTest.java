@@ -54,7 +54,7 @@ class AdminServiceTest {
 		assertEquals(Role.ADMIN, captor.getValue().getRole());
 		assertEquals("email@gmail.com", captor.getValue().getEmail());
 		assertEquals("encoded-password", captor.getValue().getPassword());
-		assertFalse(captor.getValue().isEmailAuthYn());
+		assertFalse(captor.getValue().isEmailAuth());
 		assertNotNull(captor.getValue().getEmailAuthKey());
 		assertNotNull(captor.getValue().getRegistrationDate());
 	}
@@ -97,7 +97,7 @@ class AdminServiceTest {
 		adminService.emailAuth("auth-key");
 
 		verify(userRepository, times(1)).save(captor.capture());
-		assertTrue(captor.getValue().isEmailAuthYn());
+		assertTrue(captor.getValue().isEmailAuth());
 		assertNotNull(captor.getValue().getEmailAuthDate());
 	}
 
@@ -120,7 +120,7 @@ class AdminServiceTest {
 				.email("email")
 				.password("pw")
 				.role(Role.ADMIN)
-				.emailAuthYn(true)
+				.isEmailAuth(true)
 				.build()));
 		given(passwordEncoder.matches(anyString(), anyString()))
 			.willReturn(true);
@@ -157,7 +157,7 @@ class AdminServiceTest {
 				.email("email")
 				.password("wrong-password")
 				.role(Role.ADMIN)
-				.emailAuthYn(false)
+				.isEmailAuth(false)
 				.build()));
 
 		BusinessException exception = assertThrows(BusinessException.class,
@@ -174,7 +174,7 @@ class AdminServiceTest {
 				.email("email")
 				.password("wrong-password")
 				.role(Role.ADMIN)
-				.emailAuthYn(true)
+				.isEmailAuth(true)
 				.build()));
 		given(passwordEncoder.matches(anyString(), anyString()))
 			.willReturn(false);
