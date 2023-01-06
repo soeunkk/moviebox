@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class AdminService {
+	private final static String EMAIL_REGEX = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+	private final static Pattern EMAIL_REGEX_PATTERN = Pattern.compile(EMAIL_REGEX);
+
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtProvider;
 	private final MailUtil mailUtil;
@@ -51,16 +54,7 @@ public class AdminService {
 	}
 
 	private static boolean isValidEmailFormat(String email){
-		boolean validation = false;
-
-		String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
-		Pattern p = Pattern.compile(regex);
-		Matcher m = p.matcher(email);
-		if(m.matches()) {
-			validation = true;
-		}
-
-		return validation;
+		return EMAIL_REGEX_PATTERN.matcher(email).matches();
 	}
 
 	private void sendConfirmationEmail(User user) {
