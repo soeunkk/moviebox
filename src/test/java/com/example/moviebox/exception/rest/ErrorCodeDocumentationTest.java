@@ -9,22 +9,19 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.moviebox.BaseControllerTest;
-import com.example.moviebox.admin.service.AdminService;
 import com.example.moviebox.exception.ErrorCode;
 import java.util.Arrays;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.PayloadSubsectionExtractor;
 import org.springframework.test.web.servlet.ResultActions;
-public class ErrorCodeDocumentationTest extends BaseControllerTest {
-	@MockBean
-	private AdminService adminService;
 
+@WebMvcTest(ErrorCodeController.class)
+public class ErrorCodeDocumentationTest extends BaseControllerTest {
 	@Test
 	@DisplayName("ErrorCode 문서화")
 	public void errorCodeDocumentation() throws Exception {

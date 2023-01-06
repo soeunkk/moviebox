@@ -30,6 +30,7 @@ public class SecurityConfiguration {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)	// 세션 대신 토큰 기반 인증
 			.and()
 			.authorizeRequests()
+				.antMatchers("/api/admin/register", "/api/admin/email-auth", "/api/admin/login").permitAll()
 				.antMatchers("/api/admin/**").hasRole("ADMIN")
 				.anyRequest().permitAll()
 			.and()

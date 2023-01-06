@@ -4,18 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
-import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.component.MailUtil;
-import com.example.moviebox.configuration.security.SecurityUser;
 import com.example.moviebox.exception.*;
 import com.example.moviebox.jwt.*;
+import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.user.domain.*;
 import java.util.Optional;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,8 +26,6 @@ class AdminServiceTest {
 	private MailUtil mailUtil;
 	@Mock
 	private UserRepository userRepository;
-	@Mock
-	private RedisService redisService;
 
 	@InjectMocks
 	private AdminService adminService;
@@ -182,96 +178,5 @@ class AdminServiceTest {
 			() -> adminService.login("email", "pw"));
 
 		assertEquals(exception, BusinessException.USER_NOT_FOUND_BY_PASSWORD);
-	}
-
-	@Test
-	public void testReissue() {
-		given(jwtProvider.validateToken(anyString()))
-			.willReturn(true);
-		SecurityUser userDetails = new SecurityUser(User.builder()
-			.id(1L)
-			.password("pw")
-			.role(Role.ADMIN)
-			.build());
-		given(jwtProvider.getAuthentication(anyString()))
-			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
-		given(redisService.getTokenValues(anyLong()))
-			.willReturn("refresh-token1");
-		given(jwtProvider.generateAccessTokenAndRefreshToken(anyLong()))
-			.willReturn(TokenDto.Response.builder()
-				.grantType("Bearer")
-				.accessToken("access-token2")
-				.refreshToken("refresh-token2")
-				.build());
-
-		TokenDto.Response tokenResponse = adminService.reissue(new TokenDto.Request("access-token1", "refresh-token1"));
-
-		assertEquals("Bearer", tokenResponse.getGrantType());
-		assertEquals("access-token2", tokenResponse.getAccessToken());
-		assertEquals("refresh-token2", tokenResponse.getRefreshToken());
-	}
-
-	@Test
-	public void testReissueByWrongRefreshToken() {
-		given(jwtProvider.validateToken("refresh-token"))
-			.willReturn(false);
-
-		BusinessException exception = assertThrows(BusinessException.class,
-			() -> adminService.reissue(new TokenDto.Request("access-token", "refresh-token")));
-
-		assertEquals(exception, BusinessException.INVALID_REFRESH_TOKEN);
-	}
-
-	@Test
-	public void testReissueByWrongAccessToken() {
-		given(jwtProvider.validateToken(anyString()))
-			.willReturn(true);
-		given(jwtProvider.validateToken("access-token"))
-			.willReturn(false);
-
-		BusinessException exception = assertThrows(BusinessException.class,
-			() -> adminService.reissue(new TokenDto.Request("access-token", "refresh-token")));
-
-		assertEquals(exception, BusinessException.INVALID_ACCESS_TOKEN);
-	}
-
-	@Test
-	public void testReissueByPreviousRefreshToken() {
-		given(jwtProvider.validateToken(anyString()))
-			.willReturn(true);
-		SecurityUser userDetails = new SecurityUser(User.builder()
-			.id(1L)
-			.password("pw")
-			.role(Role.ADMIN)
-			.build());
-		given(jwtProvider.getAuthentication(anyString()))
-			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
-		given(redisService.getTokenValues(anyLong()))
-			.willReturn("new-refresh-token");
-
-		BusinessException exception = assertThrows(BusinessException.class,
-			() -> adminService.reissue(new TokenDto.Request("access-token", "previous-refresh-token")));
-
-		assertEquals(exception, BusinessException.EXPIRED_REFRESH_TOKEN);
-	}
-
-	@Test
-	public void testReissueByExpiredRefreshToken() {
-		given(jwtProvider.validateToken(anyString()))
-			.willReturn(true);
-		SecurityUser userDetails = new SecurityUser(User.builder()
-			.id(1L)
-			.password("pw")
-			.role(Role.ADMIN)
-			.build());
-		given(jwtProvider.getAuthentication(anyString()))
-			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
-		given(redisService.getTokenValues(anyLong()))
-			.willReturn(null);
-
-		BusinessException exception = assertThrows(BusinessException.class,
-			() -> adminService.reissue(new TokenDto.Request("access-token", "refresh-token")));
-
-		assertEquals(exception, BusinessException.EXPIRED_REFRESH_TOKEN);
 	}
 }

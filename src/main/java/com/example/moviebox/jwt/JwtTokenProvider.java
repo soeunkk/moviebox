@@ -1,6 +1,7 @@
 package com.example.moviebox.jwt;
 
 import com.example.moviebox.common.redis.RedisService;
+import com.example.moviebox.jwt.dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

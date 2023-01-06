@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.configuration.security.SecurityUser;
+import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.user.domain.*;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

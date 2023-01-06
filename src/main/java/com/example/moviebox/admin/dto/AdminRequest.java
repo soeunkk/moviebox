@@ -7,9 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdminRequest {
-	@NotEmpty
+	@NotEmpty(message = "email을 입력해주세요.")
 	private String email;
 
-	@NotEmpty
+	@NotEmpty(message = "password를 입력해주세요.")
 	private String password;
 }

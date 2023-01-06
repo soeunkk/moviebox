@@ -1,4 +1,4 @@
-package com.example.moviebox.jwt;
+package com.example.moviebox.jwt.dto;
 
 import javax.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
