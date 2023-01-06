@@ -47,10 +47,8 @@ public class AdminService {
 			throw BusinessException.EMAIL_FORMAT_INVALID;
 		}
 
-		Optional<User> userOpt = userRepository.findByEmail(email);
-		if (userOpt.isPresent()) {
-			throw BusinessException.EMAIL_ALREADY_EXIST;
-		}
+		userRepository.findByEmail(email)
+			.ifPresent(user -> { throw BusinessException.EMAIL_ALREADY_EXIST; });
 	}
 
 	private static boolean isValidEmailFormat(String email){
