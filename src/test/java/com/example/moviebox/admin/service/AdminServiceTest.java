@@ -56,14 +56,6 @@ class AdminServiceTest {
 	}
 
 	@Test
-	public void testRegisterByWrongFormatEmail() {
-		BusinessException exception = assertThrows(BusinessException.class,
-			() -> adminService.register("wrong-format-email", "pw"));
-
-		assertEquals(BusinessException.EMAIL_FORMAT_INVALID, exception);
-	}
-
-	@Test
 	public void testRegisterByExistEmail() {
 		given(userRepository.existsByEmail(anyString()))
 			.willReturn(true);

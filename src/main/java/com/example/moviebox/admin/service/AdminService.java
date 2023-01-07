@@ -5,7 +5,6 @@ import com.example.moviebox.utils.MailUtils;
 import com.example.moviebox.exception.BusinessException;
 import com.example.moviebox.jwt.*;
 import com.example.moviebox.user.domain.*;
-import java.util.regex.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class AdminService {
-	private final static String EMAIL_REGEX = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
-	private final static Pattern EMAIL_REGEX_PATTERN = Pattern.compile(EMAIL_REGEX);
-
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtProvider;
 	private final MailUtils mailUtil;
@@ -37,18 +33,9 @@ public class AdminService {
 	}
 
 	private void validateRegistration(String email) {
-		if (!isValidEmailFormat(email)) {
-			throw BusinessException.EMAIL_FORMAT_INVALID;
-		}
-
-
 		if (userRepository.existsByEmail(email)) {
 			throw BusinessException.EMAIL_ALREADY_EXIST;
 		}
-	}
-
-	private static boolean isValidEmailFormat(String email){
-		return EMAIL_REGEX_PATTERN.matcher(email).matches();
 	}
 
 	private void sendConfirmationEmail(User user) {

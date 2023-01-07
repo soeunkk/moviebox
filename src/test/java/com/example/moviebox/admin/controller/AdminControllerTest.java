@@ -60,15 +60,12 @@ class AdminControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testRegisterByWrongFormatEmail() throws Exception {
-		willThrow(BusinessException.EMAIL_FORMAT_INVALID)
-			.given(adminService).register(anyString(), anyString());
-
 		ResultActions result = mockMvc.perform(post("/api/admin/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
 					new AdminRequest("wrong-email-format", "password"))))
 			.andExpect(status().isBadRequest());
-		checkErrorResponse(result, BusinessException.EMAIL_FORMAT_INVALID);
+		checkErrorResponse(result, ErrorCode.INVALID_INPUT_VALUE);
 
 		// docs
 		result.andDo(document("[fail] register - wrong format email",
