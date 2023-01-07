@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class RedisService {
+	private static final String REFRESH_TOKEN_PREFIX = "RT:";
 	private final RedisTemplate redisTemplate;
 
 	public void setTokenValues(long userId, String token){
 		ValueOperations<String, String> values = redisTemplate.opsForValue();
-		values.set("RT:" + userId, token, Duration.ofDays(30));  // 30일 뒤 메모리에서 삭제된다.
+		values.set(REFRESH_TOKEN_PREFIX + userId, token, Duration.ofDays(30));  // 30일 뒤 메모리에서 삭제된다.
 	}
 
 	public String getTokenValues(long userId){
