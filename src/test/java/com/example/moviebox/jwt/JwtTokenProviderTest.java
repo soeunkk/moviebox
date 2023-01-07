@@ -107,43 +107,43 @@ class JwtTokenProviderTest {
 
 	@DisplayName("토큰이 올바르면 true를 반환한다.")
 	@Test
-	public void testValidateToken() {
+	public void testIsValidateToken() {
 		TokenDto tokenDto = jwtProvider.generateAccessTokenAndRefreshToken(1L);
 		String accessToken = tokenDto.getAccessToken();
 		String refreshToken = tokenDto.getAccessToken();
 
-		assertTrue(jwtProvider.validateToken(accessToken));
-		assertTrue(jwtProvider.validateToken(refreshToken));
+		assertTrue(jwtProvider.isValidateToken(accessToken));
+		assertTrue(jwtProvider.isValidateToken(refreshToken));
 	}
 
 	@DisplayName("유효하지 않은 토큰 형식이면 false를 반환한다.")
 	@Test
-	public void testValidateTokenByInvalidToken() {
-		assertFalse(jwtProvider.validateToken("invalidToken"));
+	public void testIsValidateTokenByInvalidToken() {
+		assertFalse(jwtProvider.isValidateToken("invalidToken"));
 	}
 
 	@DisplayName("만료된 토큰이면 false를 반환한다.")
 	@Test
-	public void validateTokenByExpiredToken() {
+	public void testIsValidateTokenByExpiredToken() {
 		Date expirationDate = new Date(new Date().getTime() - 1);
 		final String expiredToken = createAdminToken(expirationDate, secretKey);
 
-		assertFalse(jwtProvider.validateToken(expiredToken));
+		assertFalse(jwtProvider.isValidateToken(expiredToken));
 	}
 
 	@DisplayName("시크릿 키가 틀리면 false를 반환한다.")
 	@Test
-	public void testValidateTokenByWrongSecretKeyToken() {
+	public void testIsValidateTokenByWrongSecretKeyToken() {
 		Date expirationDate = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000L);
 		final String invalidSecretToken = createAdminToken(expirationDate, createInvalidSecretKey());
 
-		assertFalse(jwtProvider.validateToken(invalidSecretToken));
+		assertFalse(jwtProvider.isValidateToken(invalidSecretToken));
 	}
 
 	@DisplayName("토큰 값이 없으면 false를 반환한다.")
 	@Test
-	public void testValidateTokenByEmptyToken() {
-		assertFalse(jwtProvider.validateToken(""));
+	public void testIsValidateTokenByEmptyToken() {
+		assertFalse(jwtProvider.isValidateToken(""));
 	}
 
 	private static String createAdminToken(Date expirationDate, Key secretKey) {

@@ -30,7 +30,7 @@ class TokenServiceTest {
 
 	@Test
 	public void testReissue() {
-		given(jwtProvider.validateToken(anyString()))
+		given(jwtProvider.isValidateToken(anyString()))
 			.willReturn(true);
 		SecurityUser userDetails = new SecurityUser(User.builder()
 			.id(1L)
@@ -57,7 +57,7 @@ class TokenServiceTest {
 
 	@Test
 	public void testReissueByWrongRefreshToken() {
-		given(jwtProvider.validateToken("refresh-token"))
+		given(jwtProvider.isValidateToken("refresh-token"))
 			.willReturn(false);
 
 		BusinessException exception = assertThrows(BusinessException.class,
@@ -68,9 +68,9 @@ class TokenServiceTest {
 
 	@Test
 	public void testReissueByWrongAccessToken() {
-		given(jwtProvider.validateToken(anyString()))
+		given(jwtProvider.isValidateToken(anyString()))
 			.willReturn(true);
-		given(jwtProvider.validateToken("access-token"))
+		given(jwtProvider.isValidateToken("access-token"))
 			.willReturn(false);
 
 		BusinessException exception = assertThrows(BusinessException.class,
@@ -81,7 +81,7 @@ class TokenServiceTest {
 
 	@Test
 	public void testReissueByPreviousRefreshToken() {
-		given(jwtProvider.validateToken(anyString()))
+		given(jwtProvider.isValidateToken(anyString()))
 			.willReturn(true);
 		SecurityUser userDetails = new SecurityUser(User.builder()
 			.id(1L)
@@ -101,7 +101,7 @@ class TokenServiceTest {
 
 	@Test
 	public void testReissueByExpiredRefreshToken() {
-		given(jwtProvider.validateToken(anyString()))
+		given(jwtProvider.isValidateToken(anyString()))
 			.willReturn(true);
 		SecurityUser userDetails = new SecurityUser(User.builder()
 			.id(1L)

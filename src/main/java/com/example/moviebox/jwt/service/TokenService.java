@@ -22,10 +22,10 @@ public class TokenService {
 	}
 
 	private Long validateRefreshTokenAndGetUserId(TokenCreation.Request request) {
-		if (!jwtProvider.validateToken(request.getRefreshToken())) {
+		if (!jwtProvider.isValidateToken(request.getRefreshToken())) {
 			throw BusinessException.INVALID_REFRESH_TOKEN;
 		}
-		if (!jwtProvider.validateToken(request.getAccessToken())) {
+		if (!jwtProvider.isValidateToken(request.getAccessToken())) {
 			throw BusinessException.INVALID_ACCESS_TOKEN;
 		}
 
