@@ -46,11 +46,11 @@ class JwtTokenProviderTest {
 	@DisplayName("관리자 권한의 토큰이 올바르게 생성된다.")
 	@Test
 	public void testGenerateAccessTokenAndRefreshToken() {
-		TokenDto.Response response = jwtProvider.generateAccessTokenAndRefreshToken(1L);
+		TokenDto tokenDto = jwtProvider.generateAccessTokenAndRefreshToken(1L);
 
-		assertNotNull(response.getGrantType());
-		assertNotNull(response.getAccessToken());
-		assertNotNull(response.getRefreshToken());
+		assertNotNull(tokenDto.getGrantType());
+		assertNotNull(tokenDto.getAccessToken());
+		assertNotNull(tokenDto.getRefreshToken());
 	}
 
 	@DisplayName("토큰에서 올바른 인증 정보를 조회한다.")
@@ -63,8 +63,8 @@ class JwtTokenProviderTest {
 				.role(Role.ADMIN)
 				.build()));
 
-		TokenDto.Response response = jwtProvider.generateAccessTokenAndRefreshToken(1L);
-		String accessToken = response.getAccessToken();
+		TokenDto tokenDto = jwtProvider.generateAccessTokenAndRefreshToken(1L);
+		String accessToken = tokenDto.getAccessToken();
 
 		Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
@@ -108,9 +108,9 @@ class JwtTokenProviderTest {
 	@DisplayName("토큰이 올바르면 true를 반환한다.")
 	@Test
 	public void testValidateToken() {
-		TokenDto.Response response = jwtProvider.generateAccessTokenAndRefreshToken(1L);
-		String accessToken = response.getAccessToken();
-		String refreshToken = response.getAccessToken();
+		TokenDto tokenDto = jwtProvider.generateAccessTokenAndRefreshToken(1L);
+		String accessToken = tokenDto.getAccessToken();
+		String refreshToken = tokenDto.getAccessToken();
 
 		assertTrue(jwtProvider.validateToken(accessToken));
 		assertTrue(jwtProvider.validateToken(refreshToken));

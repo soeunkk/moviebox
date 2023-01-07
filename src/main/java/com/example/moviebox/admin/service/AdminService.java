@@ -1,9 +1,9 @@
 package com.example.moviebox.admin.service;
 
+import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.utils.MailUtils;
 import com.example.moviebox.exception.BusinessException;
 import com.example.moviebox.jwt.*;
-import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.user.domain.*;
 import java.util.regex.*;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +73,7 @@ public class AdminService {
 	}
 
 	@Transactional
-	public TokenDto.Response login(String email, String password) {
+	public TokenDto login(String email, String password) {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> BusinessException.USER_NOT_FOUND_BY_EMAIL);
 		validateLogin(user, password);

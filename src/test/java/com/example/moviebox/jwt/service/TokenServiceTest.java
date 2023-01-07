@@ -8,6 +8,7 @@ import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.configuration.security.SecurityUser;
 import com.example.moviebox.exception.BusinessException;
 import com.example.moviebox.jwt.*;
+import com.example.moviebox.jwt.dto.TokenCreation;
 import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.user.domain.*;
 import org.junit.jupiter.api.Test;
@@ -41,13 +42,13 @@ class TokenServiceTest {
 		given(redisService.getTokenValues(anyLong()))
 			.willReturn("refresh-token1");
 		given(jwtProvider.generateAccessTokenAndRefreshToken(anyLong()))
-			.willReturn(TokenDto.Response.builder()
+			.willReturn(TokenDto.builder()
 				.grantType("Bearer")
 				.accessToken("access-token2")
 				.refreshToken("refresh-token2")
 				.build());
 
-		TokenDto.Response tokenResponse = tokenService.reissue(new TokenDto.Request("access-token1", "refresh-token1"));
+		TokenDto tokenResponse = tokenService.reissue(new TokenCreation.Request("access-token1", "refresh-token1"));
 
 		assertEquals("Bearer", tokenResponse.getGrantType());
 		assertEquals("access-token2", tokenResponse.getAccessToken());
@@ -60,7 +61,7 @@ class TokenServiceTest {
 			.willReturn(false);
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenDto.Request("access-token", "refresh-token")));
+			() -> tokenService.reissue(new TokenCreation.Request("access-token", "refresh-token")));
 
 		assertEquals(BusinessException.INVALID_REFRESH_TOKEN, exception);
 	}
@@ -73,7 +74,7 @@ class TokenServiceTest {
 			.willReturn(false);
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenDto.Request("access-token", "refresh-token")));
+			() -> tokenService.reissue(new TokenCreation.Request("access-token", "refresh-token")));
 
 		assertEquals(BusinessException.INVALID_ACCESS_TOKEN, exception);
 	}
@@ -93,7 +94,7 @@ class TokenServiceTest {
 			.willReturn("new-refresh-token");
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenDto.Request("access-token", "previous-refresh-token")));
+			() -> tokenService.reissue(new TokenCreation.Request("access-token", "previous-refresh-token")));
 
 		assertEquals(BusinessException.EXPIRED_REFRESH_TOKEN, exception);
 	}
@@ -113,7 +114,7 @@ class TokenServiceTest {
 			.willReturn(null);
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenDto.Request("access-token", "refresh-token")));
+			() -> tokenService.reissue(new TokenCreation.Request("access-token", "refresh-token")));
 
 		assertEquals(BusinessException.EXPIRED_REFRESH_TOKEN, exception);
 	}

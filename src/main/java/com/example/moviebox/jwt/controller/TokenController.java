@@ -1,7 +1,7 @@
 package com.example.moviebox.jwt.controller;
 
 import com.example.moviebox.common.dto.ApiResponse;
-import com.example.moviebox.jwt.dto.TokenDto;
+import com.example.moviebox.jwt.dto.TokenCreation;
 import com.example.moviebox.jwt.service.TokenService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +14,9 @@ public class TokenController {
 	private final TokenService tokenService;
 
 	@PostMapping("/reissue")
-	public ApiResponse<TokenDto.Response> reissue(@RequestBody @Valid TokenDto.Request tokenRequest) {
-		TokenDto.Response tokenResponse = tokenService.reissue(tokenRequest);
+	public ApiResponse<TokenCreation.Response> reissue(@RequestBody @Valid TokenCreation.Request tokenRequest) {
+		TokenCreation.Response tokenResponse = TokenCreation.Response.from(
+			tokenService.reissue(tokenRequest));
 		return ApiResponse.success(tokenResponse);
 	}
 }

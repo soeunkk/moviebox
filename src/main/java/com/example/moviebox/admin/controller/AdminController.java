@@ -3,7 +3,7 @@ package com.example.moviebox.admin.controller;
 import com.example.moviebox.admin.dto.AdminRequest;
 import com.example.moviebox.admin.service.AdminService;
 import com.example.moviebox.common.dto.ApiResponse;
-import com.example.moviebox.jwt.dto.TokenDto;
+import com.example.moviebox.jwt.dto.TokenCreation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +29,9 @@ public class AdminController {
 	}
 
 	@PostMapping("/login")
-	public ApiResponse<TokenDto.Response> login(@RequestBody @Valid AdminRequest adminLoginRequest) {
-		TokenDto.Response tokenResponse = adminService.login(adminLoginRequest.getEmail(), adminLoginRequest.getPassword());
+	public ApiResponse<TokenCreation.Response> login(@RequestBody @Valid AdminRequest adminLoginRequest) {
+		TokenCreation.Response tokenResponse = TokenCreation.Response.from(
+			adminService.login(adminLoginRequest.getEmail(), adminLoginRequest.getPassword()));
 		return ApiResponse.success(tokenResponse);
 	}
 }

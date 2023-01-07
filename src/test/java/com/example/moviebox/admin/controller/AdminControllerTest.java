@@ -171,7 +171,7 @@ class AdminControllerTest extends BaseControllerTest {
 	@Test
 	public void testLogin() throws Exception {
 		given(adminService.login(anyString(), anyString()))
-			.willReturn(TokenDto.Response.builder()
+			.willReturn(TokenDto.builder()
 				.grantType("Bearer")
 				.accessToken("access-token")
 				.refreshToken("refresh-token")

@@ -35,7 +35,7 @@ public class JwtTokenProvider {
 	}
 
 	// JWT Access Token + Refresh Token 생성
-	public TokenDto.Response generateAccessTokenAndRefreshToken(Long userId) {
+	public TokenDto generateAccessTokenAndRefreshToken(Long userId) {
 		Date now = new Date();
 		Date accessTokenExpiresIn = new Date(now.getTime() + accessTokenValidTime);
 		String accessToken = Jwts.builder()
@@ -52,7 +52,7 @@ public class JwtTokenProvider {
 			.compact();
 		redisService.setTokenValues(userId, refreshToken);
 
-		return TokenDto.Response.builder()
+		return TokenDto.builder()
 			.grantType("Bearer")
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)

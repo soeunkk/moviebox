@@ -3,8 +3,7 @@ package com.example.moviebox.jwt.service;
 import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.exception.BusinessException;
 import com.example.moviebox.jwt.JwtTokenProvider;
-import com.example.moviebox.jwt.dto.TokenDto;
-import com.example.moviebox.jwt.dto.TokenDto.Request;
+import com.example.moviebox.jwt.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -17,12 +16,12 @@ public class TokenService {
 	private final RedisService redisService;
 
 	@Transactional
-	public TokenDto.Response reissue(TokenDto.Request request) {
+	public TokenDto reissue(TokenCreation.Request request) {
 		Long userId = validateRefreshTokenAndGetUserId(request);
 		return jwtProvider.generateAccessTokenAndRefreshToken(userId);
 	}
 
-	private Long validateRefreshTokenAndGetUserId(Request request) {
+	private Long validateRefreshTokenAndGetUserId(TokenCreation.Request request) {
 		if (!jwtProvider.validateToken(request.getRefreshToken())) {
 			throw BusinessException.INVALID_REFRESH_TOKEN;
 		}

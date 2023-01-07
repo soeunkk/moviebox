@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
+import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.utils.MailUtils;
 import com.example.moviebox.exception.*;
 import com.example.moviebox.jwt.*;
-import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.user.domain.*;
 import java.util.Optional;
 import org.junit.jupiter.api.*;
@@ -152,17 +152,17 @@ class AdminServiceTest {
 		given(passwordEncoder.matches(anyString(), anyString()))
 			.willReturn(true);
 		given(jwtProvider.generateAccessTokenAndRefreshToken(anyLong()))
-			.willReturn(TokenDto.Response.builder()
+			.willReturn(TokenDto.builder()
 				.grantType("Bearer")
 				.accessToken("access-token")
 				.refreshToken("refresh-token")
 				.build());
 
-		TokenDto.Response tokenResponse = adminService.login("email", "pw");
+		TokenDto tokenDto = adminService.login("email", "pw");
 
-		assertEquals("Bearer", tokenResponse.getGrantType());
-		assertEquals("access-token", tokenResponse.getAccessToken());
-		assertEquals("refresh-token", tokenResponse.getRefreshToken());
+		assertEquals("Bearer", tokenDto.getGrantType());
+		assertEquals("access-token", tokenDto.getAccessToken());
+		assertEquals("refresh-token", tokenDto.getRefreshToken());
 	}
 
 	@Test

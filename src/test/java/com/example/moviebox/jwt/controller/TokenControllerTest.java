@@ -12,8 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.example.moviebox.BaseControllerTest;
 import com.example.moviebox.exception.BusinessException;
-import com.example.moviebox.jwt.dto.TokenDto;
-import com.example.moviebox.jwt.dto.TokenDto.Request;
+import com.example.moviebox.jwt.dto.*;
 import com.example.moviebox.jwt.service.TokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -31,7 +30,7 @@ class TokenControllerTest extends BaseControllerTest {
 	@Test
 	public void testReissue() throws Exception {
 		given(tokenService.reissue(any()))
-			.willReturn(TokenDto.Response.builder()
+			.willReturn(TokenDto.builder()
 				.grantType("Bearer")
 				.accessToken("access-token2")
 				.refreshToken("refresh-token2")
@@ -40,7 +39,7 @@ class TokenControllerTest extends BaseControllerTest {
 		ResultActions result = mockMvc.perform(post("/api/token/reissue")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new Request("access-token1", "refresh-token1")
+					new TokenCreation.Request("access-token1", "refresh-token1")
 				)))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.success").value(true))
@@ -79,7 +78,7 @@ class TokenControllerTest extends BaseControllerTest {
 		ResultActions actions = mockMvc.perform(post("/api/token/reissue")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new TokenDto.Request("access-token1", "wrong-refresh-token1")
+					new TokenCreation.Request("access-token1", "wrong-refresh-token1")
 				)))
 			.andExpect(status().isUnauthorized());
 		checkErrorResponse(actions, BusinessException.INVALID_REFRESH_TOKEN);
@@ -99,7 +98,7 @@ class TokenControllerTest extends BaseControllerTest {
 		ResultActions actions = mockMvc.perform(post("/api/token/reissue")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new TokenDto.Request("wrong-access-token1", "refresh-token1")
+					new TokenCreation.Request("wrong-access-token1", "refresh-token1")
 				)))
 			.andExpect(status().isUnauthorized());
 		checkErrorResponse(actions, BusinessException.INVALID_ACCESS_TOKEN);
@@ -120,7 +119,7 @@ class TokenControllerTest extends BaseControllerTest {
 		ResultActions actions = mockMvc.perform(post("/api/token/reissue")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(
-					new TokenDto.Request("access-token1", "expired-refresh-token1")
+					new TokenCreation.Request("access-token1", "expired-refresh-token1")
 				)))
 			.andExpect(status().isUnauthorized());
 		checkErrorResponse(actions, BusinessException.EXPIRED_REFRESH_TOKEN);
