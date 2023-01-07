@@ -116,9 +116,9 @@ class AdminControllerTest extends BaseControllerTest {
 	}
 
 	@Test
-	public void testEmailAuth() throws Exception {
+	public void testAuthenticateMail() throws Exception {
 		willDoNothing()
-			.given(adminService).emailAuth(anyString());
+			.given(adminService).authenticateMail(anyString());
 
 		ResultActions result = mockMvc.perform(get("/api/admin/email-auth?key=emailAuthKey"))
 			.andExpect(status().isOk())
@@ -137,9 +137,9 @@ class AdminControllerTest extends BaseControllerTest {
 	}
 
 	@Test
-	public void testEmailAuthByWrongKey() throws Exception {
+	public void testAuthenticateMailByWrongKey() throws Exception {
 		willThrow(BusinessException.EMAIL_AUTH_KEY_INVALID)
-			.given(adminService).emailAuth(anyString());
+			.given(adminService).authenticateMail(anyString());
 
 		ResultActions result = mockMvc.perform(get("/api/admin/email-auth?key=wrongKey"))
 			.andExpect(status().isBadRequest());
@@ -150,6 +150,22 @@ class AdminControllerTest extends BaseControllerTest {
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
+	}
+
+	@Test
+	public void testAuthenticateMailWhenAlreadyAuthenticatedMail() throws Exception {
+		willThrow(BusinessException.ALREADY_COMPLETE_AUTHENTICATION)
+			.given(adminService).authenticateMail(anyString());
+
+		ResultActions result = mockMvc.perform(get("/api/admin/email-auth?key=auth-key"))
+			.andExpect(status().isNotFound());
+		checkErrorResponse(result, BusinessException.ALREADY_COMPLETE_AUTHENTICATION);
+
+		// docs
+		result.andDo(document("[fail] email auth - already authenticated mail",
+			preprocessRequest(prettyPrint()),
+			preprocessResponse(prettyPrint()),
+			resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
 	}
 
 	@Test

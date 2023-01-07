@@ -58,9 +58,14 @@ public class AdminService {
 	}
 
 	@Transactional
-	public void emailAuth(String authKey) {
+	public void authenticateMail(String authKey) {
 		User user = userRepository.findByEmailAuthKey(authKey)
 			.orElseThrow(() -> BusinessException.EMAIL_AUTH_KEY_INVALID);
+
+		if (user.isEmailAuth()) {
+			throw BusinessException.ALREADY_COMPLETE_AUTHENTICATION;
+		}
+
 		user.completeEmailAuthentication();
 		userRepository.save(user);
 	}

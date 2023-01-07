@@ -23,7 +23,7 @@ class ErrorControllerTest extends BaseControllerTest {
 	@Test
 	public void handleBusinessException() throws Exception {
 		willThrow(BusinessException.EMAIL_AUTH_KEY_INVALID)
-			.given(adminService).emailAuth(anyString());
+			.given(adminService).authenticateMail(anyString());
 
 		mockMvc.perform(get("/api/admin/email-auth?id=kkk"))
 			.andExpect(status().isBadRequest())

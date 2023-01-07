@@ -24,7 +24,7 @@ public class AdminController {
 
 	@GetMapping("/email-auth")
 	public String emailAuth(@RequestParam(name="key") String authKey) {	// 사용자에게 보여줄 것이므로 ApiResponse에 담지 않음
-		adminService.emailAuth(authKey);
+		adminService.authenticateMail(authKey);
 		return "인증이 완료되었습니다.";
 	}
 

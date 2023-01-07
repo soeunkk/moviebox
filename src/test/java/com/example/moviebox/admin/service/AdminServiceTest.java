@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,7 +95,7 @@ class AdminServiceTest {
 	}
 
 	@Test
-	public void testEmailAuth() {
+	public void testAuthenticateMail() {
 		given(userRepository.findByEmailAuthKey(anyString()))
 			.willReturn(Optional.of(User.builder()
 				.id(1L)
@@ -106,7 +107,7 @@ class AdminServiceTest {
 			.willReturn(User.builder().build());
 		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
-		adminService.emailAuth("auth-key");
+		adminService.authenticateMail("auth-key");
 
 		verify(userRepository, times(1)).save(captor.capture());
 		assertTrue(captor.getValue().isEmailAuth());
@@ -114,14 +115,31 @@ class AdminServiceTest {
 	}
 
 	@Test
-	public void testEmailAuthByWrongKey() {
+	public void testAuthenticateMailByWrongKey() {
 		given(userRepository.findByEmailAuthKey(anyString()))
 			.willReturn(Optional.empty());
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> adminService.emailAuth("auth-key"));
+			() -> adminService.authenticateMail("auth-key"));
 
 		assertEquals(BusinessException.EMAIL_AUTH_KEY_INVALID, exception);
+	}
+
+	@Test
+	public void testAuthenticateMailWhenAlreadyAuthenticatedMail() {
+		given(userRepository.findByEmailAuthKey(anyString()))
+			.willReturn(Optional.of(User.builder()
+				.id(1L)
+				.email("email")
+				.password("pw")
+				.emailAuthDate(null)
+				.isEmailAuth(true)
+				.build()));
+
+		BusinessException exception = assertThrows(BusinessException.class,
+			() -> adminService.authenticateMail("auth-key"));
+
+		assertEquals(BusinessException.ALREADY_COMPLETE_AUTHENTICATION, exception);
 	}
 
 	@Test
