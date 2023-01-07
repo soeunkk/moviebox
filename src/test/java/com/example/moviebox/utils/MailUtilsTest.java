@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.*;
 
@@ -23,9 +24,7 @@ class MailUtilsTest {
 		willDoNothing()
 			.given(javaMailSender).send(any(MimeMessagePreparator.class));
 
-		boolean result = mailUtils.sendMail("example@email.com", "제목", "내용");
-
-		assertTrue(result);
+		mailUtils.sendMail("example@email.com", "제목", "내용");
 	}
 
 	@Test
@@ -33,8 +32,7 @@ class MailUtilsTest {
 		willThrow(new MailSendException(""))
 			.given(javaMailSender).send(any(MimeMessagePreparator.class));
 
-		boolean result = mailUtils.sendMail("example@email.com", "제목", "내용");
-
-		assertFalse(result);
+		assertThrows(MailException.class,
+			() -> mailUtils.sendMail("example@email.com", "제목", "내용"));
 	}
 }

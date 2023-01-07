@@ -14,13 +14,14 @@ import com.epages.restdocs.apispec.*;
 import com.example.moviebox.BaseControllerTest;
 import com.example.moviebox.admin.dto.AdminRequest;
 import com.example.moviebox.admin.service.AdminService;
-import com.example.moviebox.exception.BusinessException;
+import com.example.moviebox.exception.*;
 import com.example.moviebox.jwt.dto.TokenDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.*;
 import org.springframework.http.MediaType;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(AdminController.class)
@@ -93,6 +94,25 @@ class AdminControllerTest extends BaseControllerTest {
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
 				resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
+	}
+
+	@Test
+	public void testRegisterWhenMailExceptionThrown() throws Exception {
+		willThrow(new MailAuthenticationException(""))
+			.given(adminService).register(anyString(), anyString());
+
+		ResultActions result = mockMvc.perform(post("/api/admin/register")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(
+					new AdminRequest("exist-email@email.com", "password"))))
+			.andExpect(status().isInternalServerError());
+		checkErrorResponse(result, ErrorCode.CAN_NOT_SEND_EMAIL);
+
+		// docs
+		result.andDo(document("[fail] register - fail send mail",
+			preprocessRequest(prettyPrint()),
+			preprocessResponse(prettyPrint()),
+			resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
 	}
 
 	@Test

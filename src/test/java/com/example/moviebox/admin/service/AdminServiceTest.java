@@ -40,8 +40,8 @@ class AdminServiceTest {
 			.willReturn(User.builder()
 				.email("email@gmail.com")
 				.build());
-		given(mailUtil.sendMail(anyString(), anyString(), anyString()))
-			.willReturn(true);
+		willDoNothing()
+			.given(mailUtil).sendMail(anyString(), anyString(), anyString());
 		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 
 		adminService.register("email@gmail.com", "pw");
@@ -74,6 +74,23 @@ class AdminServiceTest {
 			() -> adminService.register("email@gmail.com", "pw"));
 
 		assertEquals(BusinessException.EMAIL_ALREADY_EXIST, exception);
+	}
+
+	@Test
+	public void testRegisterWhenMailExceptionThrown() {
+		given(userRepository.findByEmail(anyString()))
+			.willReturn(Optional.empty());
+		given(passwordEncoder.encode(anyString()))
+			.willReturn("encoded-password");
+		given(userRepository.save(any()))
+			.willReturn(User.builder()
+				.email("email@gmail.com")
+				.build());
+		willThrow(new MailSendException(""))
+			.given(mailUtil).sendMail(anyString(), anyString(), anyString());
+
+		assertThrows(MailException.class,
+			() -> adminService.register("email@gmail.com", "pw"));
 	}
 
 	@Test

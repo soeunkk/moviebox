@@ -8,6 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.*;
@@ -108,6 +113,19 @@ public class ErrorController {
 		ApiError errorContents = ApiError.builder()
 			.errorCode(ErrorCode.INVALID_INPUT_VALUE)
 			.errorMessage(e.getMessage())
+			.errorOccurrencePath(request.getRequestURI())
+			.build();
+		return ApiResponse.error(errorContents);
+	}
+
+	// MailException: 메일을 전송할 때 발생한 오류
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(MailException.class)
+	protected ApiResponse<?> handleMailException(HttpServletRequest request, MailException e) {
+		log.error(e.getMessage());
+		ApiError errorContents = ApiError.builder()
+			.errorCode(ErrorCode.CAN_NOT_SEND_EMAIL)
+			.errorMessage("서버 내부 오류로 인해 사용자에게 메일을 전송할 수 없습니다.")
 			.errorOccurrencePath(request.getRequestURI())
 			.build();
 		return ApiResponse.error(errorContents);

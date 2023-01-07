@@ -1,6 +1,7 @@
 package com.example.moviebox.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.*;
 import org.springframework.stereotype.Component;
 
@@ -9,9 +10,7 @@ import org.springframework.stereotype.Component;
 public class MailUtils {
 	private final JavaMailSender javaMailSender;
 
-	public boolean sendMail(String mail, String subject, String text) {
-		boolean result = false;
-
+	public void sendMail(String mail, String subject, String text) throws MailException {
 		MimeMessagePreparator message = mimeMessage -> {
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 			mimeMessageHelper.setTo(mail);
@@ -19,13 +18,6 @@ public class MailUtils {
 			mimeMessageHelper.setText(text, true);
 		};
 
-		try {
-			javaMailSender.send(message);
-			result = true;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-
-		return result;
+		javaMailSender.send(message);
 	}
 }

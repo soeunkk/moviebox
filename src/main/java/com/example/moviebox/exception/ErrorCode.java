@@ -12,7 +12,10 @@ public enum ErrorCode {
 	ACCESS_DENIED(HttpStatus.FORBIDDEN, "COMMON-004", "접근이 거부된 경우"),
 	USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "ACCOUNT-001", "사용자를 찾을 수 없는 경우"),
 	CAN_NOT_CREATE_USER(HttpStatus.BAD_REQUEST, "ACCOUNT-002", "해당 정보로 계정을 생성할 수 없는 경우"),
-	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN-001", "비정상적인 토큰인 경우");
+	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN-001", "비정상적인 토큰인 경우"),
+
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-001", "서버에 내부적으로 문제가 생긴 경우"),
+	CAN_NOT_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-002", "메일 발송에 오류가 생긴 경우");
 
 	private final HttpStatus httpStatus;
 	private final String errorType;
