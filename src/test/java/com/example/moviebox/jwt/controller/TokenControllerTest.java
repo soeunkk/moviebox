@@ -54,7 +54,7 @@ class TokenControllerTest extends BaseControllerTest {
 			preprocessResponse(prettyPrint()),
 			resource(ResourceSnippetParameters.builder()
 				.summary("JWT 토큰 재발행")
-				.tag("admin")
+				.tag("token")
 				.requestFields(
 					fieldWithPath("accessToken").description("현재 Access 토큰"),
 					fieldWithPath("refreshToken").description("현재 Refresh 토큰")
@@ -88,7 +88,7 @@ class TokenControllerTest extends BaseControllerTest {
 		actions.andDo(document("[fail] reissue - wrong refresh token",
 			preprocessRequest(prettyPrint()),
 			preprocessResponse(prettyPrint()),
-			resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
+			resource(ResourceSnippetParameters.builder().tag("token").responseFields(ERROR_RESPONSE_FIELDS).build())));
 	}
 
 	@Test
@@ -109,7 +109,7 @@ class TokenControllerTest extends BaseControllerTest {
 			document("[fail] reissue - wrong access token",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
-				resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
+				resource(ResourceSnippetParameters.builder().tag("token").responseFields(ERROR_RESPONSE_FIELDS).build())));
 	}
 
 	@Test
@@ -130,6 +130,6 @@ class TokenControllerTest extends BaseControllerTest {
 			document("[fail] reissue - expired refresh token",
 				preprocessRequest(prettyPrint()),
 				preprocessResponse(prettyPrint()),
-				resource(ResourceSnippetParameters.builder().tag("admin").responseFields(ERROR_RESPONSE_FIELDS).build())));
+				resource(ResourceSnippetParameters.builder().tag("token").responseFields(ERROR_RESPONSE_FIELDS).build())));
 	}
 }
