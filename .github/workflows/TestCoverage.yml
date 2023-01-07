@@ -22,18 +22,23 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      # Git Secret을 이용한 application-aws.properties 생성
+      # Git Secret을 이용한 application-xxx.properties 생성
       - name: Create spring properties
         run: |
-          touch src/main/resources/application-aws.properties
-          echo "$AWS_PROPERTIES" > application-aws.properties.b64
-          base64 -d -i application-aws.properties.b64 > src/main/resources/application-aws.properties
           touch src/main/resources/application-security.properties
           echo "$SECURITY_PROPERTIES" > application-security.properties.b64
           base64 -d -i application-security.properties.b64 > src/main/resources/application-security.properties
+          touch src/main/resources/application-prod.properties
+          echo "$PROD_PROPERTIES" > application-prod.properties.b64
+          base64 -d -i application-prod.properties.b64 > src/main/resources/application-prod.properties
         env:
-          AWS_PROPERTIES: ${{ secrets.AWS_PROPERTIES }}
           SECURITY_PROPERTIES: ${{ secrets.SECURITY_PROPERTIES }}
+          PROD_PROPERTIES: ${{ secrets.PROD_PROPERTIES }}
+
+      # 애플리케이션 설정을 local에서 prod 상태로 변경
+      - name: Change application level in properties (local -> prod)
+        run: |
+          sed -i 's/spring.profiles.active=local/spring.profiles.active=prod/g' src/main/resources/application.properties
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
