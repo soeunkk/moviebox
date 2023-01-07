@@ -33,8 +33,8 @@ class AdminServiceTest {
 
 	@Test
 	public void testRegister() {
-		given(userRepository.findByEmail(anyString()))
-			.willReturn(Optional.empty());
+		given(userRepository.existsByEmail(anyString()))
+			.willReturn(false);
 		given(passwordEncoder.encode(anyString()))
 			.willReturn("encoded-password");
 		given(userRepository.save(any()))
@@ -65,11 +65,8 @@ class AdminServiceTest {
 
 	@Test
 	public void testRegisterByExistEmail() {
-		given(userRepository.findByEmail(anyString()))
-			.willReturn(Optional.of(User.builder()
-				.id(1L)
-				.email("email@gmail.con")
-				.build()));
+		given(userRepository.existsByEmail(anyString()))
+			.willReturn(true);
 
 		BusinessException exception = assertThrows(BusinessException.class,
 			() -> adminService.register("email@gmail.com", "pw"));
@@ -79,8 +76,8 @@ class AdminServiceTest {
 
 	@Test
 	public void testRegisterWhenMailExceptionThrown() {
-		given(userRepository.findByEmail(anyString()))
-			.willReturn(Optional.empty());
+		given(userRepository.existsByEmail(anyString()))
+			.willReturn(false);
 		given(passwordEncoder.encode(anyString()))
 			.willReturn("encoded-password");
 		given(userRepository.save(any()))
