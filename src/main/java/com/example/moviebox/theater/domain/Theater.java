@@ -1,6 +1,8 @@
 package com.example.moviebox.theater.domain;
 
 import com.example.moviebox.common.status.PlaceStatus;
+import com.example.moviebox.screen.domain.Screen;
+import java.util.List;
 import javax.persistence.*;
 import lombok.*;
 
@@ -24,4 +26,7 @@ public class Theater {
 	private String streetName;
 
 	private PlaceStatus status;
+
+	@OneToMany(mappedBy = "theater")
+	private List<Screen> screens;
 }

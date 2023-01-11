@@ -1,5 +1,7 @@
 package com.example.moviebox.screening.domain;
 
+import com.example.moviebox.movie.domain.Movie;
+import com.example.moviebox.screen.domain.Screen;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,4 +30,12 @@ public class Screening {
 	@Column(columnDefinition = "longtext", nullable = false)
 	private Map<String, Boolean> seats = new HashMap<>();	// 좌석 별 예약 여부
 	private boolean isReflectedInAudience;
+
+	@ManyToOne
+	@JoinColumn(name = "movie_id", referencedColumnName = "id")
+	private Movie movie;
+
+	@ManyToOne
+	@JoinColumn(name = "screen_id", referencedColumnName = "id")
+	private Screen screen;
 }

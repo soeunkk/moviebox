@@ -1,6 +1,9 @@
 package com.example.moviebox.screen.domain;
 
 import com.example.moviebox.common.status.PlaceStatus;
+import com.example.moviebox.screening.domain.Screening;
+import com.example.moviebox.theater.domain.Theater;
+import java.util.List;
 import javax.persistence.*;
 import lombok.*;
 
@@ -24,4 +27,11 @@ public class Screen {
 
 	@Column(nullable = false)
 	private PlaceStatus status;
+
+	@ManyToOne
+	@JoinColumn(name = "theater_id", referencedColumnName = "id")
+	private Theater theater;
+
+	@OneToMany(mappedBy = "screen")
+	private List<Screening> screenings;
 }
