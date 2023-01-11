@@ -8,7 +8,6 @@ import com.example.moviebox.common.redis.RedisService;
 import com.example.moviebox.configuration.security.SecurityUser;
 import com.example.moviebox.exception.BusinessException;
 import com.example.moviebox.jwt.*;
-import com.example.moviebox.jwt.dto.TokenCreation;
 import com.example.moviebox.jwt.dto.TokenDto;
 import com.example.moviebox.user.domain.*;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class TokenServiceTest {
 			.build());
 		given(jwtProvider.getAuthentication(anyString()))
 			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
-		given(redisService.getTokenValues(anyLong()))
+		given(redisService.getRefreshTokenValue(anyLong()))
 			.willReturn("refresh-token1");
 		given(jwtProvider.generateAccessTokenAndRefreshToken(anyLong()))
 			.willReturn(TokenDto.builder()
@@ -48,7 +47,7 @@ class TokenServiceTest {
 				.refreshToken("refresh-token2")
 				.build());
 
-		TokenDto tokenResponse = tokenService.reissue(new TokenCreation.Request("access-token1", "refresh-token1"));
+		TokenDto tokenResponse = tokenService.reissue("access-token1", "refresh-token1");
 
 		assertEquals("Bearer", tokenResponse.getGrantType());
 		assertEquals("access-token2", tokenResponse.getAccessToken());
@@ -56,27 +55,27 @@ class TokenServiceTest {
 	}
 
 	@Test
-	public void testReissueByWrongRefreshToken() {
-		given(jwtProvider.isValidateToken("refresh-token"))
-			.willReturn(false);
-
-		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenCreation.Request("access-token", "refresh-token")));
-
-		assertEquals(BusinessException.INVALID_REFRESH_TOKEN, exception);
-	}
-
-	@Test
 	public void testReissueByWrongAccessToken() {
-		given(jwtProvider.isValidateToken(anyString()))
-			.willReturn(true);
 		given(jwtProvider.isValidateToken("access-token"))
 			.willReturn(false);
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenCreation.Request("access-token", "refresh-token")));
+			() -> tokenService.reissue("access-token", "refresh-token"));
 
 		assertEquals(BusinessException.INVALID_ACCESS_TOKEN, exception);
+	}
+
+	@Test
+	public void testReissueByWrongRefreshToken() {
+		given(jwtProvider.isValidateToken(anyString()))
+			.willReturn(true);
+		given(jwtProvider.isValidateToken("refresh-token"))
+			.willReturn(false);
+
+		BusinessException exception = assertThrows(BusinessException.class,
+			() -> tokenService.reissue("access-token", "refresh-token"));
+
+		assertEquals(BusinessException.INVALID_REFRESH_TOKEN, exception);
 	}
 
 	@Test
@@ -90,11 +89,11 @@ class TokenServiceTest {
 			.build());
 		given(jwtProvider.getAuthentication(anyString()))
 			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
-		given(redisService.getTokenValues(anyLong()))
+		given(redisService.getRefreshTokenValue(anyLong()))
 			.willReturn("new-refresh-token");
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenCreation.Request("access-token", "previous-refresh-token")));
+			() -> tokenService.reissue("access-token", "previous-refresh-token"));
 
 		assertEquals(BusinessException.EXPIRED_REFRESH_TOKEN, exception);
 	}
@@ -110,11 +109,11 @@ class TokenServiceTest {
 			.build());
 		given(jwtProvider.getAuthentication(anyString()))
 			.willReturn(new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
-		given(redisService.getTokenValues(anyLong()))
+		given(redisService.getRefreshTokenValue(anyLong()))
 			.willReturn(null);
 
 		BusinessException exception = assertThrows(BusinessException.class,
-			() -> tokenService.reissue(new TokenCreation.Request("access-token", "refresh-token")));
+			() -> tokenService.reissue("access-token", "refresh-token"));
 
 		assertEquals(BusinessException.EXPIRED_REFRESH_TOKEN, exception);
 	}

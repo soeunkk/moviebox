@@ -3,6 +3,7 @@ package com.example.moviebox.jwt.controller;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -29,7 +30,7 @@ class TokenControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testReissue() throws Exception {
-		given(tokenService.reissue(any()))
+		given(tokenService.reissue(anyString(), anyString()))
 			.willReturn(TokenDto.builder()
 				.grantType("Bearer")
 				.accessToken("access-token2")
@@ -72,7 +73,7 @@ class TokenControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testReissueByWrongRefreshToken() throws Exception {
-		given(tokenService.reissue(any()))
+		given(tokenService.reissue(anyString(), anyString()))
 			.willThrow(BusinessException.INVALID_REFRESH_TOKEN);
 
 		ResultActions actions = mockMvc.perform(post("/api/token/reissue")
@@ -92,7 +93,7 @@ class TokenControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testReissueByWrongAccessToken() throws Exception {
-		given(tokenService.reissue(any()))
+		given(tokenService.reissue(anyString(), anyString()))
 			.willThrow(BusinessException.INVALID_ACCESS_TOKEN);
 
 		ResultActions actions = mockMvc.perform(post("/api/token/reissue")
@@ -113,7 +114,7 @@ class TokenControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testReissueByExpiredRefreshToken() throws Exception {
-		given(tokenService.reissue(any()))
+		given(tokenService.reissue(anyString(), anyString()))
 			.willThrow(BusinessException.EXPIRED_REFRESH_TOKEN);
 
 		ResultActions actions = mockMvc.perform(post("/api/token/reissue")

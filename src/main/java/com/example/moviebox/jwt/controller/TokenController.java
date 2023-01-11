@@ -16,7 +16,7 @@ public class TokenController {
 	@PostMapping("/reissue")
 	public ApiResponse<TokenCreation.Response> reissue(@RequestBody @Valid TokenCreation.Request tokenRequest) {
 		TokenCreation.Response tokenResponse = TokenCreation.Response.from(
-			tokenService.reissue(tokenRequest));
+			tokenService.reissue(tokenRequest.getAccessToken(), tokenRequest.getRefreshToken()));
 		return ApiResponse.success(tokenResponse);
 	}
 }

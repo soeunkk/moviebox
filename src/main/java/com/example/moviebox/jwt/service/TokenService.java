@@ -14,23 +14,23 @@ public class TokenService {
 	private final JwtTokenProvider jwtProvider;
 	private final RedisService redisService;
 
-	public TokenDto reissue(TokenCreation.Request request) {
-		Long userId = validateRefreshTokenAndGetUserId(request);
+	public TokenDto reissue(String accessToken, String refreshToken) {
+		Long userId = validateTokenAndGetUserId(accessToken, refreshToken);
 		return jwtProvider.generateAccessTokenAndRefreshToken(userId);
 	}
 
-	private Long validateRefreshTokenAndGetUserId(TokenCreation.Request request) {
-		if (!jwtProvider.isValidateToken(request.getRefreshToken())) {
-			throw BusinessException.INVALID_REFRESH_TOKEN;
-		}
-		if (!jwtProvider.isValidateToken(request.getAccessToken())) {
+	private Long validateTokenAndGetUserId(String accessToken, String refreshToken) {
+		if (!jwtProvider.isValidateToken(accessToken)) {
 			throw BusinessException.INVALID_ACCESS_TOKEN;
 		}
+		if (!jwtProvider.isValidateToken(refreshToken)) {
+			throw BusinessException.INVALID_REFRESH_TOKEN;
+		}
 
-		Authentication authentication = jwtProvider.getAuthentication(request.getAccessToken());
-
-		String refreshToken = redisService.getTokenValues(Long.parseLong(authentication.getName()));
-		if (refreshToken == null || !refreshToken.equals(request.getRefreshToken())) {
+		Authentication authentication = jwtProvider.getAuthentication(accessToken);
+		long userId = Long.parseLong(authentication.getName());
+		String refreshTokenInDatabase = redisService.getRefreshTokenValue(userId);
+		if (refreshTokenInDatabase == null || !refreshTokenInDatabase.equals(refreshToken)) {
 			throw BusinessException.EXPIRED_REFRESH_TOKEN;
 		}
 

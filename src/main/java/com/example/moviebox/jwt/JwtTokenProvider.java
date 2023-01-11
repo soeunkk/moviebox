@@ -50,7 +50,7 @@ public class JwtTokenProvider {
 			.setExpiration(refreshTokenExpiresIn)
 			.signWith(secretKey, SignatureAlgorithm.HS256)
 			.compact();
-		redisService.setTokenValues(userId, refreshToken);
+		redisService.setRefreshTokenValue(userId, refreshToken);
 
 		return TokenDto.builder()
 			.grantType("Bearer")
