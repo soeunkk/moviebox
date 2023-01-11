@@ -7,7 +7,6 @@ import com.example.moviebox.jwt.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -15,7 +14,6 @@ public class TokenService {
 	private final JwtTokenProvider jwtProvider;
 	private final RedisService redisService;
 
-	@Transactional
 	public TokenDto reissue(TokenCreation.Request request) {
 		Long userId = validateRefreshTokenAndGetUserId(request);
 		return jwtProvider.generateAccessTokenAndRefreshToken(userId);

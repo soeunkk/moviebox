@@ -59,7 +59,7 @@ public class AdminService {
 		userRepository.save(user);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public TokenDto login(String email, String password) {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(() -> BusinessException.USER_NOT_FOUND_BY_EMAIL);

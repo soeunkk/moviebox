@@ -6,12 +6,14 @@ import com.example.moviebox.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class SecurityUserDetailService implements UserDetailsService {
 	private final UserRepository userRepository;
 
+	@Transactional(readOnly = true)
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		User user = userRepository.findById(Long.parseLong(userId))
