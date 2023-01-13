@@ -26,6 +26,7 @@ public class Screen {
 	private int totalSeats;
 
 	@Column(nullable = false)
+	@Enumerated(value = EnumType.STRING)
 	private PlaceStatus status;
 
 	@ManyToOne

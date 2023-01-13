@@ -25,6 +25,8 @@ public class Theater {
 	private double y;
 	private String streetName;
 
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private PlaceStatus status;
 
 	@OneToMany(mappedBy = "theater")

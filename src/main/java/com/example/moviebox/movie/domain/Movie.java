@@ -21,11 +21,12 @@ public class Movie extends BaseTimeEntity {
 	private String director;
 	private String actors;
 	private int runningTime;
+	@Enumerated(EnumType.STRING)
 	private Rating rating;
 	private String posterUrl;
 	private LocalDateTime openedAt;
 
-	private int audience;
+	private int audience = 0;
 	private float grade;
 	private LocalDateTime gradeUpdatedAt;
 }
